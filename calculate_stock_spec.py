@@ -83,12 +83,18 @@ def calculate_all_spec(codes, relacode):
         tickerresult.append(amplitude_ten)
         tickerresult.append(amplitude_five)
 
+        highopen_year = cal_highopen(daily)
+        highopen_month = cal_highopen(daily, 20)
+
+        tickerresult.append(highopen_year)
+        tickerresult.append(highopen_month)
+
         result.append(tickerresult)
         number += 1
         print(number)
 
     db.execute(r'''
-    INSERT OR REPLACE INTO stock_spec VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    INSERT OR REPLACE INTO stock_spec VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     ''', result)
 
 def cal_alpha_beta(relash, relaticker, dayNumber=0):
@@ -120,6 +126,20 @@ def cal_amplitude(dayK,dayNumber=0):
     minlow = dailylastN['low'].min()
     amplitude = (maxhigh - minlow)/dailylastN['preclose'].iloc[0]
     return amplitude
+
+def cal_highopen(dayK, dayNumber=0):
+    if dayNumber > dayK.shape[0]:
+        return np.nan
+    if dayNumber == 0:
+        dayNumber = dayK.shape[0]
+    
+    number = 0
+    dailylastN = dayK.tail(dayNumber)
+    for i in range(dayNumber):
+        if dailylastN['open'].iloc[i] > dailylastN['preclose'].iloc[i]:
+            number += 1
+    return number
+    
 if __name__=='__main__':
     calculate_all_spec('sh.688126', 'sh.000001')
     #calculate_all_spec('sz', 'sz.399001')

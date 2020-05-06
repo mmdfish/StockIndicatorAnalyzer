@@ -56,5 +56,5 @@ def refresh_all_stock_day_k(start_date="2020-03-27",current_date = "2020-03-30")
 
 if __name__=='__main__':
     #refresh_all_stock("2020-04-20")
-    refresh_stock_day_k("sh.688126", "2020-04-20", "2020-04-20")
+    refresh_stock_day_k("sh.000001", "2020-04-20", "2020-04-27")
     #refresh_all_stock_day_k()

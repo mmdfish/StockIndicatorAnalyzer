@@ -7,10 +7,11 @@ import createDB
 
 if __name__=='__main__':
 
-    #createDB.createDB()
+    createDB.createDB()
 
     current_date = datetime.date.today().strftime('%Y-%m-%d')
     hour = datetime.datetime.now().hour
+    #baostock data maybe not update right after the trade market close.
     if hour < 20:
         dd = datetime.date.today() + datetime.timedelta(-1)
         current_date = dd.strftime('%Y-%m-%d')
