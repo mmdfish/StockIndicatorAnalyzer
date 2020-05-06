@@ -2,7 +2,7 @@
 
 用BaoStock来抓取A股的数据并计算一些指标。
 
-
+[简书](https://www.jianshu.com/p/1eeb120d9eed) [githubpages](https://mmdfish.github.io/2020/04/28/%E7%94%A8BaoStock%E8%8E%B7%E5%BE%97%E6%95%B0%E6%8D%AE%E5%B9%B6%E5%AD%98%E5%85%A5%E6%95%B0%E6%8D%AE%E5%BA%93/)
 
 ## 开发环境
 
