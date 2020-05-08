@@ -1,9 +1,10 @@
 import baostock as bs
 import pandas as pd
 import sqlite3
+import common
 
 def createDB():
-    conn = sqlite3.connect("mystock.db")
+    conn = sqlite3.connect(common.db_path_sqlite3)
     cursor = conn.cursor()
 
     # create three tables, allstock stock_day_k and stock_spec
@@ -24,7 +25,7 @@ def createDB():
     conn.close()
 
 def alterTable():
-    conn = sqlite3.connect("mystock.db")
+    conn = sqlite3.connect(common.db_path_sqlite3)
     cursor = conn.cursor()
 
     sql_stock_spec = "ALTER TABLE stock_spec add column highopen_y REAL"

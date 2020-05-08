@@ -1,9 +1,10 @@
 import baostock as bs
 import pandas as pd
 from sqlalchemy import create_engine
+import common
 
 def refresh_all_stock(current_date = "2020-03-27"):
-    db_conn = create_engine('sqlite:///mystock.db')
+    db_conn = create_engine(common.db_path_sqlalchemy)
     lg = bs.login()
     rs = bs.query_all_stock(day=current_date)
 
@@ -27,7 +28,7 @@ def refresh_stock_day_k(code="sh.000001",start_date="2020-03-27",current_date = 
     print('query_history_k_data_plus code:'+code)
     print(len(data_list))
     bs.logout()
-    db_conn = create_engine('sqlite:///mystock.db')
+    db_conn = create_engine(common.db_path_sqlalchemy)
 
     db_conn.execute(r'''
     INSERT OR REPLACE INTO stock_day_k VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
@@ -48,7 +49,7 @@ def refresh_all_stock_day_k(start_date="2020-03-27",current_date = "2020-03-30")
             data_list.append(k_rs.get_row_data())
         print('query_history_k_data_plus code:'+code)
     bs.logout()
-    db_conn = create_engine('sqlite:///mystock.db')
+    db_conn = create_engine(common.db_path_sqlalchemy)
 
     db_conn.execute(r'''
     INSERT OR REPLACE INTO stock_day_k VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
