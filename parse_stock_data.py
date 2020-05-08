@@ -55,7 +55,46 @@ def refresh_all_stock_day_k(start_date="2020-03-27",current_date = "2020-03-30")
     INSERT OR REPLACE INTO stock_day_k VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
     ''', data_list)
 
+def refresh_all_stock_day_k_first_time(start_date="2020-03-27", end_date="2020-05-08", current_date = "2020-05-08"):
+    bs.login()
+
+    stock_rs = bs.query_all_stock(day=current_date)
+    stock_df = stock_rs.get_data()
+    db_conn = create_engine(common.db_path_sqlalchemy)
+    data_list = []
+    number = 0
+    for code in stock_df["code"]:
+        k_rs = bs.query_history_k_data_plus(code,
+            "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,peTTM,pbMRQ,psTTM,pcfNcfTTM,isST",
+            start_date=start_date, end_date=end_date, 
+            frequency="d", adjustflag="2")
+        while (k_rs.error_code == '0') & k_rs.next():
+            data_list.append(k_rs.get_row_data())
+        print('query_history_k_data_plus code:'+code)
+        number += 1
+        if number == 50:
+            if len(data_list) > 0: 
+                db_conn.execute(r'''
+                    INSERT OR REPLACE INTO stock_day_k VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    ''', data_list)
+            data_list = []
+            number = 0
+    
+    if number != 50:
+        if len(data_list) > 0: 
+            db_conn.execute(r'''
+                    INSERT OR REPLACE INTO stock_day_k VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    ''', data_list)
+        data_list = []
+        number = 0
+
+    bs.logout()
+    
+
+    
+
 if __name__=='__main__':
     #refresh_all_stock("2020-04-20")
-    refresh_stock_day_k("sh.000001", "2020-04-20", "2020-04-27")
+    #refresh_stock_day_k("sh.000001", "2020-04-20", "2020-04-27")
     #refresh_all_stock_day_k()
+    refresh_all_stock_day_k_first_time("2006-01-01", "2010-01-01")

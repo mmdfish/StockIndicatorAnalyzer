@@ -12,6 +12,7 @@ def calculate_all_spec(codes, relacode):
     sql_cmd = "SELECT * FROM allstock where code like '" + codes + "%'"
     allstocks = pd.read_sql(sql=sql_cmd, con=db)
 
+    number = 0
     result = []
     sql_cmd = "SELECT * FROM stock_day_k where code='" + relacode + "' order by date desc limit 0,251"
     datash = pd.read_sql(sql=sql_cmd, con=db)
@@ -27,9 +28,12 @@ def calculate_all_spec(codes, relacode):
     for (ticker,code_name,tradestatus) in zip(allstocks['code'],allstocks['code_name'],allstocks['tradeStatus']):
         if ticker == relacode:
             continue
-        print(ticker, code_name)
+        number += 1
+        print(number, ticker, code_name)
         sql_cmd = "SELECT * FROM stock_day_k where code='" + ticker+"' order by date desc limit 0,251"
         daily = pd.read_sql(sql=sql_cmd, con=db)
+        if(len(daily) == 1):
+            continue
         if tradestatus == 0:
             count = 0
             canSkip = False
@@ -91,12 +95,11 @@ def calculate_all_spec(codes, relacode):
         tickerresult.append(highopen_month)
 
         result.append(tickerresult)
-        number += 1
-        print(number)
 
-    db.execute(r'''
-    INSERT OR REPLACE INTO stock_spec VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-    ''', result)
+    if len(result) != 0:  
+        db.execute(r'''
+        INSERT OR REPLACE INTO stock_spec VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ''', result)
 
 def cal_alpha_beta(relash, relaticker, dayNumber=0):
     if dayNumber > relaticker.shape[0]:
@@ -142,5 +145,5 @@ def cal_highopen(dayK, dayNumber=0):
     return number
     
 if __name__=='__main__':
-    calculate_all_spec('sh.688126', 'sh.000001')
+    calculate_all_spec('sh.688466', 'sh.000001')
     #calculate_all_spec('sz', 'sz.399001')

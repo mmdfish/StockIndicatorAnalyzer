@@ -13,7 +13,7 @@ def testAllStock():
 
 def testDayK():
     #sql_cmd = "SELECT * FROM stock_day_k"
-    sql_cmd = "SELECT * FROM stock_day_k where code='sh.000001' order by date desc limit 0,10"
+    sql_cmd = "SELECT * FROM stock_day_k where code='sh.000001' order by date asc limit 0,10"
     #sql_cmd = "SELECT * FROM stock_day_k where date='2020-03-05'"
     #sql_cmd = "SELECT * FROM stock_day_k where code='sh.000001' and date>'2019-01-01'"
     begin = datetime.now()

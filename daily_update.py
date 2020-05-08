@@ -36,14 +36,15 @@ if __name__=='__main__':
             lastTradeDate = data_list[i][0]
             break
     
+    print(start_date, lastTradeDate)
     if start_date <= lastTradeDate:
         print("start to refresh all stock")
-        parse_stock_data.refresh_all_stock(lastTradeDate)
+        #parse_stock_data.refresh_all_stock(lastTradeDate)
         print("start to refresh all stock day K")
-        parse_stock_data.refresh_all_stock_day_k(start_date, lastTradeDate)
+        #parse_stock_data.refresh_all_stock_day_k(start_date, lastTradeDate)
         print("start to calculate sh")
         calculate_stock_spec.calculate_all_spec('sh', 'sh.000001')
         print("start to calculate sz")
-        calculate_stock_spec.calculate_all_spec('sz', 'sz.399001')
+        #calculate_stock_spec.calculate_all_spec('sz', 'sz.399001')
         with open(file_path,"w") as f:
             f.write(current_date) 
