@@ -4,9 +4,10 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 import datetime
+import common
 
 def calculate_all_spec(codes, relacode):
-    db = create_engine('sqlite:///mystock.db')
+    db = create_engine(common.db_path_sqlalchemy)
 
     sql_cmd = "SELECT * FROM allstock where code like '" + codes + "%'"
     allstocks = pd.read_sql(sql=sql_cmd, con=db)
