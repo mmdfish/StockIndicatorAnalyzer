@@ -3,6 +3,7 @@ import calculate_stock_spec
 import datetime
 import os
 import baostock as bs
+import calculate_hs300_spec
 
 #baostock data maybe not update right after the trade market close. 
 #It is better to run the daily task after 20:00
@@ -46,5 +47,7 @@ if __name__=='__main__':
         calculate_stock_spec.calculate_all_spec('sh', 'sh.000001')
         print("start to calculate sz")
         calculate_stock_spec.calculate_all_spec('sz', 'sz.399001')
+        print("start to calculate hs300")
+        calculate_hs300_spec.calculate_hs300_spec()
         with open(file_path,"w") as f:
             f.write(current_date) 
