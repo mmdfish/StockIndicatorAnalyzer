@@ -75,9 +75,20 @@ def testSearchTime():
 
     elapse = datetime.now() - begin
     print(result[0], elapse)
+
+def testStockhs300Spec():
+    cx = create_engine(common.db_path_sqlalchemy)
+    #sql_cmd = "SELECT * FROM stock_spec where code='sh.688358'"
+    sql_cmd = "SELECT * FROM stock_hs300_spec where date=(select max(date) from stock_hs300_spec) order by trendgap_y desc limit 0,50"
+    #sql_cmd = "SELECT * FROM stock_spec where date=(select max(date) from stock_spec) order by amplitude_10 asc limit 0,50"
+    
+    result = pd.read_sql(sql=sql_cmd, con=cx)
+    print(result)
+
 #testAllStock()
 testDayK()
 #testOneStock()
 #testStockSpec()
 #testDate()
 #testSearchTime()
+testStockhs300Spec()

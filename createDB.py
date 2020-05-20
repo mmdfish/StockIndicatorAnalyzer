@@ -16,10 +16,14 @@ def createDB():
         "alpha_m REAL, beta_m REAL, r_m REAL, corr_y REAL, cov_y REAL, corr_m REAL, cov_m REAL,"\
         "amplitude_y REAL, amplitude_m REAL,amplitude_10 REAL,amplitude_5 REAL,highopen_y REAL,highopen_m REAL, primary key (date, code))"
     sql_day_K_index = "CREATE INDEX code_index ON stock_day_k (code)"
+    sql_stock_hs300_spec = "CREATE TABLE stock_hs300_spec(date date, code TEXT, name TEXT, trendgap_y REAL,trendgap_hy REAL,trendgap_qy REAL,trendgap_m REAL, trendgap_10 REAL, trendgap_5 REAL, primary key (date, code))"
+    sql_drop_table = "DROP TABLE stock_hs300_spec"
     cursor.execute(sql_stock)
     cursor.execute(sql_day_K)        
     cursor.execute(sql_stock_spec)
     cursor.execute(sql_day_K_index)
+    cursor.execute(sql_stock_hs300_spec)
+    #cursor.execute(sql_drop_table)
     cursor.close()
     conn.commit()
     conn.close()
