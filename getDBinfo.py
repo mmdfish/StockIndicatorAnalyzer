@@ -15,5 +15,8 @@ print(cursor.fetchall())
 cursor.execute('PRAGMA table_info(stock_hs300_spec)')
 print(cursor.fetchall())
 
+cursor.execute('PRAGMA table_info(stock_qualification)')
+print(cursor.fetchall())
+
 cursor.close()
 conn.close()

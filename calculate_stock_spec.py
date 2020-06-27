@@ -5,6 +5,7 @@ import numpy as np
 from scipy import stats
 import datetime
 import common
+import calculate_stock_qualification
 
 def calculate_all_spec(codes, relacode):
     db = create_engine(common.db_path_sqlalchemy)
@@ -14,6 +15,7 @@ def calculate_all_spec(codes, relacode):
 
     number = 0
     result = []
+    macdresult = []
     sql_cmd = "SELECT * FROM stock_day_k where code='" + relacode + "' order by date desc limit 0,251"
     datash = pd.read_sql(sql=sql_cmd, con=db)
     price = DataFrame({'date': datash['date'], relacode:datash['close']})
@@ -96,10 +98,26 @@ def calculate_all_spec(codes, relacode):
 
         result.append(tickerresult)
 
+        if tradestatus == 0:
+            continue
+        tickermacd = []
+        tickermacd.append(currentdate)
+        tickermacd.append(ticker)
+        tickermacd.append(code_name)
+        tickermacd.extend(calculate_stock_qualification.cal_macd_boll(daily))
+        tickermacd.extend(calculate_stock_qualification.cal_ma_spec(daily))
+        tickermacd.append(calculate_stock_qualification.cal_huge_volume(daily))
+        tickermacd.append(calculate_stock_qualification.dayK_desc_or_asc(daily,3))
+        macdresult.append(tickermacd)
     if len(result) != 0:  
         db.execute(r'''
         INSERT OR REPLACE INTO stock_spec VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         ''', result)
+    
+    if len(macdresult) != 0:  
+        db.execute(r'''
+        INSERT OR REPLACE INTO stock_qualification VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ''', macdresult)
 
 def cal_alpha_beta(relash, relaticker, dayNumber=0):
     if dayNumber > relaticker.shape[0]:
@@ -145,5 +163,5 @@ def cal_highopen(dayK, dayNumber=0):
     return number
     
 if __name__=='__main__':
-    calculate_all_spec('sh.688466', 'sh.000001')
+    calculate_all_spec('sh.600182', 'sh.000001')
     #calculate_all_spec('sz', 'sz.399001')
