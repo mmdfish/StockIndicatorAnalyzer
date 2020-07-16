@@ -34,6 +34,10 @@ def calculate_all_spec(codes, relacode):
         print(number, ticker, code_name)
         sql_cmd = "SELECT * FROM stock_day_k where code='" + ticker+"' order by date desc limit 0,251"
         daily = pd.read_sql(sql=sql_cmd, con=db)
+        if ticker.startswith("sh.6") | ticker.startswith("sz.00") | ticker.startswith("sz.300"):
+            sql_cmd = "SELECT * FROM stock_adjustfactor where code='" + ticker + "' order by date desc"
+            factor = pd.read_sql(sql=sql_cmd, con=db)
+            common.calculateDayKWithAdjustFactor(daily, factor)
         if(len(daily) == 1):
             continue
         if tradestatus == 0:
@@ -109,15 +113,15 @@ def calculate_all_spec(codes, relacode):
         tickermacd.append(calculate_stock_qualification.cal_huge_volume(daily))
         tickermacd.append(calculate_stock_qualification.dayK_desc_or_asc(daily,3))
         macdresult.append(tickermacd)
-    if len(result) != 0:  
-        db.execute(r'''
-        INSERT OR REPLACE INTO stock_spec VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-        ''', result)
+    # if len(result) != 0:  
+    #     db.execute(r'''
+    #     INSERT OR REPLACE INTO stock_spec VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    #     ''', result)
     
-    if len(macdresult) != 0:  
-        db.execute(r'''
-        INSERT OR REPLACE INTO stock_qualification VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-        ''', macdresult)
+    # if len(macdresult) != 0:  
+    #     db.execute(r'''
+    #     INSERT OR REPLACE INTO stock_qualification VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    #     ''', macdresult)
 
 def cal_alpha_beta(relash, relaticker, dayNumber=0):
     if dayNumber > relaticker.shape[0]:
@@ -163,5 +167,10 @@ def cal_highopen(dayK, dayNumber=0):
     return number
     
 if __name__=='__main__':
-    calculate_all_spec('sh.600182', 'sh.000001')
+    starttime = datetime.datetime.now()
+    calculate_all_spec('sh.6', 'sh.000001')
     #calculate_all_spec('sz', 'sz.399001')
+    #long running
+
+    endtime = datetime.datetime.now()
+    print(endtime - starttime)

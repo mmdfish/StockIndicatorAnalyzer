@@ -19,6 +19,14 @@ def testStockStatus():
     print(result)
     print(result.shape[0])
 
+def testStockAdjust():
+    ticker = 'sh.603986'
+    sql_cmd = "SELECT * FROM stock_adjustfactor where code='" + ticker + "'"
+    cx = sqlite3.connect(common.db_path_sqlite3)
+    result = pd.read_sql(sql=sql_cmd, con=cx)
+    print(result)
+    print(result.shape[0])
+
 def testDayK():
     #sql_cmd = "SELECT * FROM stock_day_k"
     sql_cmd = "SELECT * FROM stock_day_k where code='sh.000001' order by date asc limit 0,10"
@@ -96,17 +104,19 @@ def testStockhs300Spec():
 def testStockQualification():
     cx = create_engine(common.db_path_sqlalchemy)
     #sql_cmd = "SELECT * FROM stock_spec where code='sh.688358'"
-    sql_cmd = "SELECT * FROM stock_qualification where date=(select max(date) from stock_qualification) and amplitude_10 > '0' order by amplitude_10 asc limit 0,50"
+    sql_cmd = "SELECT * FROM stock_qualification where code = 'sh.600000' and date=(select max(date) from stock_qualification)"
     #sql_cmd = "SELECT * FROM stock_spec where date=(select max(date) from stock_spec) order by amplitude_10 asc limit 0,50"
     
     result = pd.read_sql(sql=sql_cmd, con=cx)
     print(result)
 
 #testAllStock()
-testStockStatus()
+#testStockStatus()
 #testDayK()
+#testStockAdjust()
 #testOneStock()
 #testStockSpec()
 #testDate()
 #testSearchTime()
 #testStockhs300Spec()
+testStockQualification()

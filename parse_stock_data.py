@@ -5,7 +5,7 @@ import common
 
 def refresh_all_stock(current_date = "2020-03-27"):
     db_conn = create_engine(common.db_path_sqlalchemy)
-    lg = bs.login()
+    bs.login()
     rs = bs.query_all_stock(day=current_date)
 
     data_list = []
@@ -15,6 +15,28 @@ def refresh_all_stock(current_date = "2020-03-27"):
     INSERT OR REPLACE INTO allstock VALUES (?, ?, ?)
     ''', data_list)
 
+    bs.logout()
+
+def refresh_all_stock_adjust(start_date="2020-03-27",current_date = "2020-03-30"):
+    bs.login()
+
+    db_conn = create_engine(common.db_path_sqlalchemy)
+    stock_rs = bs.query_all_stock(day=current_date)
+    stock_df = stock_rs.get_data()
+    rs_list = []
+    for code in stock_df["code"]:
+        if code.startswith("sh.6") | code.startswith("sz.00") | code.startswith("sz.300"):
+            print('query_stock_factor code:'+code)
+            rs_factor = bs.query_adjust_factor(code=code, start_date=start_date, end_date=current_date)
+            while (rs_factor.error_code == '0') & rs_factor.next():
+                rs_list.append(rs_factor.get_row_data())
+    #print(rs_list)
+    if len(rs_list) > 0:
+        db_conn.execute(r'''
+                INSERT OR REPLACE INTO stock_adjustfactor VALUES (?, ?, ?, ?, ?)
+                ''', rs_list)
+    bs.logout()
+
 def refresh_stock_day_k(code="sh.000001",start_date="2020-03-27",current_date = "2020-03-30"):
     bs.login()
 
@@ -22,7 +44,7 @@ def refresh_stock_day_k(code="sh.000001",start_date="2020-03-27",current_date = 
     k_rs = bs.query_history_k_data_plus(code,
         "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,peTTM,pbMRQ,psTTM,pcfNcfTTM,isST",
         start_date=start_date, end_date='', 
-        frequency="d", adjustflag="2")
+        frequency="d", adjustflag="3")
     while (k_rs.error_code == '0') & k_rs.next():
         data_list.append(k_rs.get_row_data())
     print('query_history_k_data_plus code:'+code)
@@ -44,7 +66,7 @@ def refresh_all_stock_day_k(start_date="2020-03-27",current_date = "2020-03-30")
         k_rs = bs.query_history_k_data_plus(code,
             "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,peTTM,pbMRQ,psTTM,pcfNcfTTM,isST",
             start_date=start_date, end_date='', 
-            frequency="d", adjustflag="2")
+            frequency="d", adjustflag="3")
         while (k_rs.error_code == '0') & k_rs.next():
             data_list.append(k_rs.get_row_data())
         print('query_history_k_data_plus code:'+code)
@@ -67,7 +89,7 @@ def refresh_all_stock_day_k_first_time(start_date="2020-03-27", end_date="2020-0
         k_rs = bs.query_history_k_data_plus(code,
             "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,peTTM,pbMRQ,psTTM,pcfNcfTTM,isST",
             start_date=start_date, end_date=end_date, 
-            frequency="d", adjustflag="2")
+            frequency="d", adjustflag="3")
         while (k_rs.error_code == '0') & k_rs.next():
             data_list.append(k_rs.get_row_data())
         print('query_history_k_data_plus code:'+code)
