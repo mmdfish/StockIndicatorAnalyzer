@@ -42,6 +42,21 @@ def testDayK():
     print(elapse)
     print(result)
 
+def testDayKNoAdjust():
+    #sql_cmd = "SELECT * FROM stock_day_k"
+    sql_cmd = "SELECT * FROM stock_day_k_noadjust where code='sh.000001' order by date asc limit 0,10"
+    #sql_cmd = "SELECT * FROM stock_day_k where date='2020-03-05'"
+    #sql_cmd = "SELECT * FROM stock_day_k where code='sh.000001' and date>'2019-01-01'"
+    begin = datetime.now()
+    cx = create_engine(common.db_path_sqlalchemy)
+    begin2 = datetime.now()
+    elapse = begin2 - begin
+    print(elapse)
+    result = pd.read_sql(sql=sql_cmd, con=cx)
+    elapse = datetime.now() - begin2
+    print(elapse)
+    print(result)
+
 def testOneStock():
     ticker = 'sh.688126'
     cx = create_engine(common.db_path_sqlalchemy)
@@ -110,13 +125,54 @@ def testStockQualification():
     result = pd.read_sql(sql=sql_cmd, con=cx)
     print(result)
 
+def testDayK22():
+    ticker = 'sh.000001'
+    sql_cmd = "SELECT * FROM stock_day_k where code='" + ticker + "'"
+    #sql_cmd = "SELECT * FROM stock_day_k where code='sh.000001' order by date asc limit 0,10"
+    cx = create_engine(common.db_path_sqlalchemy)
+    result = pd.read_sql(sql=sql_cmd, con=cx)
+    print(result)
+    #print(result.values.tolist())
+
+def testFactor():
+    current_date = "2020-07-22"
+    sql_cmd = "SELECT * FROM stock_adjustfactor where date>='" + current_date + "'"
+    db = create_engine(common.db_path_sqlalchemy)
+    factor = pd.read_sql(sql=sql_cmd, con=db)
+    print(factor)
+    for i in range(factor.shape[0]):
+        ticker = factor.loc[i, 'code']
+        print(ticker)
+        sql_cmd = "SELECT * FROM stock_day_k_noadjust where code='" + ticker+"' order by date desc limit 0,300"
+        daily = pd.read_sql(sql=sql_cmd, con=db)
+        print(daily.head(50))
+        sql_cmd = "SELECT * FROM stock_adjustfactor where code='" + ticker + "' order by date desc"
+        adjustfactor = pd.read_sql(sql=sql_cmd, con=db)
+        print(adjustfactor)
+        common.calculateDayKWithAdjustFactor(daily, adjustfactor)
+        print(daily.head(50))
+        break
+
+import baostock as bs
+def testGetFactor():
+    bs.login()
+    data_list=[]
+    k_rs = bs.query_adjust_factor(code="sh.600161", start_date="2010-01-01", end_date="")
+    while (k_rs.error_code == '0') & k_rs.next():
+        data_list.append(k_rs.get_row_data())
+    print(data_list)
+    bs.logout()
+
 #testAllStock()
 #testStockStatus()
 #testDayK()
+#testDayKNoAdjust()
 #testStockAdjust()
 #testOneStock()
 #testStockSpec()
 #testDate()
 #testSearchTime()
 #testStockhs300Spec()
-testStockQualification()
+#testStockQualification()
+testFactor()
+#testGetFactor()

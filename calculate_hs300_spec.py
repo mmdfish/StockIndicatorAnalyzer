@@ -32,10 +32,6 @@ def calculate_hs300_spec():
         code_name = stockinfo[2]
         sql_cmd = "SELECT * FROM stock_day_k where code='" + stockcode+"' order by date desc limit 0,251"
         daily = pd.read_sql(sql=sql_cmd, con=db)
-        if stockcode.startswith("sh.6") | stockcode.startswith("sz.00") | stockcode.startswith("sz.300"):
-            sql_cmd = "SELECT * FROM stock_adjustfactor where code='" + stockcode + "' order by date desc"
-            factor = pd.read_sql(sql=sql_cmd, con=db)
-            common.calculateDayKWithAdjustFactor(daily, factor)
         pp = DataFrame({stockcode:daily['close']})
         price2 = pd.concat([price, pp], axis=1)
         price2 = price2.drop(['date'], axis=1)

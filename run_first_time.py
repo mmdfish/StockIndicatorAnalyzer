@@ -35,11 +35,13 @@ if __name__=='__main__':
     
     if start_date <= lastTradeDate:
         print("start to refresh all stock")
-        #parse_stock_data.refresh_all_stock(lastTradeDate)
+        parse_stock_data.refresh_all_stock(lastTradeDate)
         print("start to refresh all stock adjust factor")
-        #parse_stock_data.refresh_all_stock_adjust(start_date, lastTradeDate)
+        parse_stock_data.refresh_all_stock_adjust(start_date, lastTradeDate)
+        print("start to refresh all stock day K no adjust")
+        parse_stock_data.refresh_all_stock_day_k_no_adjust_first_time(start_date, lastTradeDate)
         print("start to refresh all stock day K")
-        #parse_stock_data.refresh_all_stock_day_k_first_time(start_date, lastTradeDate)
+        parse_stock_data.refresh_all_stock_day_k_first_time(start_date, lastTradeDate)
         print("start to calculate sh")
         calculate_stock_spec.calculate_all_spec('sh', 'sh.000001')
         print("start to calculate sz")

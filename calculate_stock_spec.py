@@ -32,12 +32,8 @@ def calculate_all_spec(codes, relacode):
             continue
         number += 1
         print(number, ticker, code_name)
-        sql_cmd = "SELECT * FROM stock_day_k where code='" + ticker+"' order by date desc limit 0,251"
+        sql_cmd = "SELECT * FROM stock_day_k where code='" + ticker+"' order by date desc limit 0,20"
         daily = pd.read_sql(sql=sql_cmd, con=db)
-        if ticker.startswith("sh.6") | ticker.startswith("sz.00") | ticker.startswith("sz.300"):
-            sql_cmd = "SELECT * FROM stock_adjustfactor where code='" + ticker + "' order by date desc"
-            factor = pd.read_sql(sql=sql_cmd, con=db)
-            common.calculateDayKWithAdjustFactor(daily, factor)
         if(len(daily) == 1):
             continue
         if tradestatus == 0:
@@ -53,6 +49,10 @@ def calculate_all_spec(codes, relacode):
 
             if canSkip:
                 continue 
+        
+        sql_cmd = "SELECT * FROM stock_day_k where code='" + ticker+"' and tradestatus='1' order by date desc limit 0,251"
+        daily = pd.read_sql(sql=sql_cmd, con=db)
+
         daily = daily.sort_values(by='date', ascending=True)
         daily = daily.reset_index(drop = True)
         daily['relaprice'] = daily['close']/daily['close'][0]
@@ -168,7 +168,7 @@ def cal_highopen(dayK, dayNumber=0):
     
 if __name__=='__main__':
     starttime = datetime.datetime.now()
-    calculate_all_spec('sh.6', 'sh.000001')
+    calculate_all_spec('sh.600000', 'sh.000001')
     #calculate_all_spec('sz', 'sz.399001')
     #long running
 

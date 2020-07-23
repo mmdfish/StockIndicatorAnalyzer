@@ -212,7 +212,7 @@ def dayK_desc_or_asc(dayK, dayNumber):
     return 0 
 
 if __name__=='__main__':
-    ticker = 'sh.600614'
+    ticker = 'sh.600651'
     db = create_engine(common.db_path_sqlalchemy)
     sql_cmd = "SELECT * FROM stock_day_k where code='" + ticker+"' order by date desc limit 0,251"
     daily = pd.read_sql(sql=sql_cmd, con=db)
