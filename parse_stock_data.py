@@ -75,7 +75,7 @@ def refresh_all_stock_day_k_noadjust(start_date="2020-03-27",current_date = "202
             frequency="d", adjustflag="3")
         while (k_rs.error_code == '0') & k_rs.next():
             data_list.append(k_rs.get_row_data())
-        print('query_history_k_data_plus code:'+code)
+        print('query_history_k_data_plus no adjust code:'+code)
     bs.logout()
     db_conn = create_engine(common.db_path_sqlalchemy)
 
@@ -86,25 +86,25 @@ def refresh_all_stock_day_k_noadjust(start_date="2020-03-27",current_date = "202
 def refresh_all_stock_day_k(start_date="2020-03-27",current_date = "2020-03-30"):
     bs.login()
 
-    # stock_rs = bs.query_all_stock(day=current_date)
-    # stock_df = stock_rs.get_data()
-    # data_list = []
-    # for code in stock_df["code"]:
-    #     k_rs = bs.query_history_k_data_plus(code,
-    #         "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,peTTM,pbMRQ,psTTM,pcfNcfTTM,isST",
-    #         start_date=start_date, end_date='', 
-    #         frequency="d", adjustflag="2")
-    #     while (k_rs.error_code == '0') & k_rs.next():
-    #         data_list.append(k_rs.get_row_data())
-    #     print('query_history_k_data_fore code:'+code)
-    # bs.logout()
+    stock_rs = bs.query_all_stock(day=current_date)
+    stock_df = stock_rs.get_data()
+    data_list = []
+    for code in stock_df["code"]:
+        k_rs = bs.query_history_k_data_plus(code,
+            "date,code,open,high,low,close,preclose,volume,amount,adjustflag,turn,tradestatus,pctChg,peTTM,pbMRQ,psTTM,pcfNcfTTM,isST",
+            start_date=start_date, end_date='', 
+            frequency="d", adjustflag="2")
+        while (k_rs.error_code == '0') & k_rs.next():
+            data_list.append(k_rs.get_row_data())
+        print('query_history_k_data_fore code:'+code)
+    bs.logout()
     db_conn = create_engine(common.db_path_sqlalchemy)
 
-    # db_conn.execute(r'''
-    # INSERT OR REPLACE INTO stock_day_k VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-    # ''', data_list)
+    db_conn.execute(r'''
+    INSERT OR REPLACE INTO stock_day_k VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+    ''', data_list)
 
-    sql_cmd = "SELECT * FROM stock_adjustfactor where date>='" + current_date + "'"
+    sql_cmd = "SELECT * FROM stock_adjustfactor where date>='" + start_date + "'"
     factor = pd.read_sql(sql=sql_cmd, con=db_conn)
     for i in range(factor.shape[0]):
         ticker = factor.loc[i, 'code']
