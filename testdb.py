@@ -125,6 +125,14 @@ def testStockQualification():
     result = pd.read_sql(sql=sql_cmd, con=cx)
     print(result)
 
+def testStockQualification2():
+    cx = create_engine(common.db_path_sqlalchemy)
+    sql_cmd = "SELECT * FROM stock_qualification where ma5_5 = '2' and date=(select max(date) from stock_qualification) and (code like 'sh.6%' or code like 'sz.00%' or code like 'sz.300%')"
+    #sql_cmd = "SELECT * FROM stock_spec where date=(select max(date) from stock_spec) order by amplitude_10 asc limit 0,50"
+    
+    result = pd.read_sql(sql=sql_cmd, con=cx)
+    print(result)
+
 def testDayK22():
     ticker = 'sh.000001'
     sql_cmd = "SELECT * FROM stock_day_k where code='" + ticker + "'"
@@ -165,8 +173,8 @@ def testGetFactor():
 
 #testAllStock()
 #testStockStatus()
-testDayK()
-testDayKNoAdjust()
+#testDayK()
+#testDayKNoAdjust()
 #testStockAdjust()
 #testOneStock()
 #testStockSpec()
@@ -174,5 +182,6 @@ testDayKNoAdjust()
 #testSearchTime()
 #testStockhs300Spec()
 #testStockQualification()
+testStockQualification2()
 #testFactor()
 #testGetFactor()

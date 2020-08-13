@@ -168,8 +168,8 @@ def cal_highopen(dayK, dayNumber=0):
     
 if __name__=='__main__':
     starttime = datetime.datetime.now()
-    # calculate_all_spec('sh.600000', 'sh.000001')
-    calculate_all_spec('sz.300855', 'sz.399001')
+    calculate_all_spec('sh.601012', 'sh.000001')
+    #calculate_all_spec('sz.300855', 'sz.399001')
     #long running
 
     endtime = datetime.datetime.now()

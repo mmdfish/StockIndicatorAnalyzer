@@ -203,12 +203,12 @@ def dayK_desc_or_asc(dayK, dayNumber):
         for i in range(1, dayNumber):
             if change[length - dayNumber + i] < 0:
                 return 0
-        return 1
+        return 2
     if change[length - dayNumber] < 0:
         for i in range(1, dayNumber):
             if change[length - dayNumber + i] > 0:
                 return 0
-        return 2
+        return 1
     return 0 
 
 if __name__=='__main__':
