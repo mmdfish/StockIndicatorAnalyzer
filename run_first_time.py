@@ -4,10 +4,11 @@ import datetime
 import os
 import baostock as bs
 import createDB
+import calculate_hs300_spec
 
 if __name__=='__main__':
 
-    createDB.createDB()
+    #createDB.createDB()
 
     current_date = datetime.date.today().strftime('%Y-%m-%d')
     hour = datetime.datetime.now().hour
@@ -16,7 +17,7 @@ if __name__=='__main__':
         dd = datetime.date.today() + datetime.timedelta(-1)
         current_date = dd.strftime('%Y-%m-%d')
     
-    start_date = "2017-01-01"
+    start_date = "2006-01-01"
 
     data_list = []
     bs.login()
@@ -30,15 +31,23 @@ if __name__=='__main__':
             lastTradeDate = data_list[i][0]
             break
     
+    print(start_date, lastTradeDate)
+    
     if start_date <= lastTradeDate:
         print("start to refresh all stock")
         parse_stock_data.refresh_all_stock(lastTradeDate)
+        print("start to refresh all stock adjust factor")
+        parse_stock_data.refresh_all_stock_adjust(start_date, lastTradeDate)
+        print("start to refresh all stock day K no adjust")
+        parse_stock_data.refresh_all_stock_day_k_no_adjust_first_time(start_date, lastTradeDate)
         print("start to refresh all stock day K")
-        parse_stock_data.refresh_all_stock_day_k(start_date, lastTradeDate)
+        parse_stock_data.refresh_all_stock_day_k_first_time(start_date, lastTradeDate)
         print("start to calculate sh")
         calculate_stock_spec.calculate_all_spec('sh', 'sh.000001')
         print("start to calculate sz")
         calculate_stock_spec.calculate_all_spec('sz', 'sz.399001')
+        print("start to calculate hs300")
+        calculate_hs300_spec.calculate_hs300_spec()
 
         folderpath = os.path.dirname(os.path.realpath(__file__))
         file_path = os.path.join(folderpath, "date.txt")

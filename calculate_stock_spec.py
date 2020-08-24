@@ -4,14 +4,18 @@ import pandas as pd
 import numpy as np
 from scipy import stats
 import datetime
+import common
+import calculate_stock_qualification
 
 def calculate_all_spec(codes, relacode):
-    db = create_engine('sqlite:///mystock.db')
+    db = create_engine(common.db_path_sqlalchemy)
 
     sql_cmd = "SELECT * FROM allstock where code like '" + codes + "%'"
     allstocks = pd.read_sql(sql=sql_cmd, con=db)
 
+    number = 0
     result = []
+    macdresult = []
     sql_cmd = "SELECT * FROM stock_day_k where code='" + relacode + "' order by date desc limit 0,251"
     datash = pd.read_sql(sql=sql_cmd, con=db)
     price = DataFrame({'date': datash['date'], relacode:datash['close']})
@@ -26,9 +30,12 @@ def calculate_all_spec(codes, relacode):
     for (ticker,code_name,tradestatus) in zip(allstocks['code'],allstocks['code_name'],allstocks['tradeStatus']):
         if ticker == relacode:
             continue
-        print(ticker, code_name)
-        sql_cmd = "SELECT * FROM stock_day_k where code='" + ticker+"' order by date desc limit 0,251"
+        number += 1
+        print(number, ticker, code_name)
+        sql_cmd = "SELECT * FROM stock_day_k where code='" + ticker+"' order by date desc limit 0,20"
         daily = pd.read_sql(sql=sql_cmd, con=db)
+        if(len(daily) == 1):
+            continue
         if tradestatus == 0:
             count = 0
             canSkip = False
@@ -42,6 +49,10 @@ def calculate_all_spec(codes, relacode):
 
             if canSkip:
                 continue 
+        
+        sql_cmd = "SELECT * FROM stock_day_k where code='" + ticker+"' and tradestatus='1' order by date desc limit 0,251"
+        daily = pd.read_sql(sql=sql_cmd, con=db)
+
         daily = daily.sort_values(by='date', ascending=True)
         daily = daily.reset_index(drop = True)
         daily['relaprice'] = daily['close']/daily['close'][0]
@@ -90,12 +101,27 @@ def calculate_all_spec(codes, relacode):
         tickerresult.append(highopen_month)
 
         result.append(tickerresult)
-        number += 1
-        print(number)
 
-    db.execute(r'''
-    INSERT OR REPLACE INTO stock_spec VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-    ''', result)
+        if tradestatus == 0:
+            continue
+        tickermacd = []
+        tickermacd.append(currentdate)
+        tickermacd.append(ticker)
+        tickermacd.append(code_name)
+        tickermacd.extend(calculate_stock_qualification.cal_macd_boll(daily))
+        tickermacd.extend(calculate_stock_qualification.cal_ma_spec(daily))
+        tickermacd.append(calculate_stock_qualification.cal_huge_volume(daily))
+        tickermacd.append(calculate_stock_qualification.dayK_desc_or_asc(daily,3))
+        macdresult.append(tickermacd)
+    if len(result) != 0:  
+        db.execute(r'''
+        INSERT OR REPLACE INTO stock_spec VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ''', result)
+    
+    if len(macdresult) != 0:  
+        db.execute(r'''
+        INSERT OR REPLACE INTO stock_qualification VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        ''', macdresult)
 
 def cal_alpha_beta(relash, relaticker, dayNumber=0):
     if dayNumber > relaticker.shape[0]:
@@ -141,5 +167,10 @@ def cal_highopen(dayK, dayNumber=0):
     return number
     
 if __name__=='__main__':
-    calculate_all_spec('sh.688126', 'sh.000001')
-    #calculate_all_spec('sz', 'sz.399001')
+    starttime = datetime.datetime.now()
+    calculate_all_spec('sh.601012', 'sh.000001')
+    #calculate_all_spec('sz.300855', 'sz.399001')
+    #long running
+
+    endtime = datetime.datetime.now()
+    print(endtime - starttime)
