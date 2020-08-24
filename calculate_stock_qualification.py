@@ -182,7 +182,7 @@ def cal_huge_volume(dayKKK):
             continue
         sum_30 += volume[index]
         count = count + 1
-        if count == 30:
+        if count == 27:
             break
     avg_30 = sum_30/count
     if(avg_3 > avg_30 * 3):
