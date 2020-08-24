@@ -180,7 +180,7 @@ def cal_huge_volume(dayKKK):
             continue
         if volume[index] == 0:
             continue
-        sum_30 += volume[i]
+        sum_30 += volume[index]
         count = count + 1
         if count == 30:
             break
