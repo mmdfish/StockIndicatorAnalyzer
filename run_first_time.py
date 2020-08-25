@@ -8,7 +8,7 @@ import calculate_hs300_spec
 
 if __name__=='__main__':
 
-    #createDB.createDB()
+    createDB.createDB()
 
     current_date = datetime.date.today().strftime('%Y-%m-%d')
     hour = datetime.datetime.now().hour
