@@ -112,7 +112,10 @@ def calculate_all_spec(codes, relacode):
         tickermacd.extend(calculate_stock_qualification.cal_ma_spec(daily))
         tickermacd.append(calculate_stock_qualification.cal_huge_volume(daily))
         tickermacd.append(calculate_stock_qualification.dayK_desc_or_asc(daily,3))
+        oversold = calculate_stock_qualification.dayK_oversold(daily, 60)
+        tickermacd.append(oversold)
         macdresult.append(tickermacd)
+
     if len(result) != 0:  
         db.execute(r'''
         INSERT OR REPLACE INTO stock_spec VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
@@ -120,7 +123,7 @@ def calculate_all_spec(codes, relacode):
     
     if len(macdresult) != 0:  
         db.execute(r'''
-        INSERT OR REPLACE INTO stock_qualification VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        INSERT OR REPLACE INTO stock_qualification VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         ''', macdresult)
 
 def cal_alpha_beta(relash, relaticker, dayNumber=0):
@@ -168,8 +171,9 @@ def cal_highopen(dayK, dayNumber=0):
     
 if __name__=='__main__':
     starttime = datetime.datetime.now()
-    calculate_all_spec('sh.601012', 'sh.000001')
-    #calculate_all_spec('sz.300855', 'sz.399001')
+    #calculate_all_spec('sh.600918', 'sh.000001')
+    #calculate_all_spec('sh', 'sh.000001')
+    calculate_all_spec('sz.300059', 'sz.399001')
     #long running
 
     endtime = datetime.datetime.now()

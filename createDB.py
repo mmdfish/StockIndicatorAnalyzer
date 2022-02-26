@@ -62,7 +62,19 @@ def alterTableName():
     conn.commit()
     conn.close()
 
+def addTableColumn():
+    conn = sqlite3.connect(common.db_path_sqlite3)
+    cursor = conn.cursor()
+
+    sql_stock_qualification = "ALTER TABLE stock_qualification add column oversold REAL"
+    cursor.execute(sql_stock_qualification)
+
+    cursor.close()
+    conn.commit()
+    conn.close()
+
 if __name__=='__main__':
-    createDB()
+    #createDB()
     #alterTable()
     #alterTableName()
+    addTableColumn()

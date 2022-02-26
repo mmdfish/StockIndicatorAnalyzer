@@ -211,6 +211,29 @@ def dayK_desc_or_asc(dayK, dayNumber):
         return 1
     return 0 
 
+def dayK_oversold(dayKKK, dayNumber):
+    if dayKKK['tradestatus'][dayKKK.shape[0] - 1] == 0:
+        return 0
+    if len(dayKKK) < dayNumber:
+        return 0
+
+    dailylastN = dayKKK.tail(dayNumber)
+
+    close = dailylastN['close']
+
+    closeMax = close.max()
+    closeMin = close.min()
+
+    dayK = Sdf.retype(dailylastN) 
+
+    dayK['ma20'] = dayK.close.rolling(20).mean()
+
+    ma20_10 = ma_desc_or_asc(dayK['ma20'],10)
+
+    if ((closeMin > closeMax * 0.6) & (closeMin < closeMax * 0.7) & (ma20_10 == 1)) :
+        return 1
+    return 0
+
 if __name__=='__main__':
     ticker = 'sh.600651'
     db = create_engine(common.db_path_sqlalchemy)
