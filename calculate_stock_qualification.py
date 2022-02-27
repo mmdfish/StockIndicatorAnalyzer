@@ -230,7 +230,7 @@ def dayK_oversold(dayKKK, dayNumber):
 
     ma20_10 = ma_desc_or_asc(dayK['ma20'],10)
 
-    if ((closeMin > closeMax * 0.6) & (closeMin < closeMax * 0.7) & (ma20_10 == 1)) :
+    if ((closeMin < closeMax * 0.65) and (ma20_10 == 1)) :
         return 1
     return 0
 
