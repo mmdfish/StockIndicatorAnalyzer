@@ -201,12 +201,12 @@ def dayK_desc_or_asc(dayK, dayNumber):
     change = dayK['pctchg']
     if change[length - dayNumber] > 0:
         for i in range(1, dayNumber):
-            if change[length - dayNumber + i] < 0:
+            if isinstance(change[length - dayNumber + i], float) and (change[length - dayNumber + i] < 0):
                 return 0
         return 2
     if change[length - dayNumber] < 0:
         for i in range(1, dayNumber):
-            if change[length - dayNumber + i] > 0:
+            if isinstance(change[length - dayNumber + i], float) and (change[length - dayNumber + i] > 0):
                 return 0
         return 1
     return 0 
