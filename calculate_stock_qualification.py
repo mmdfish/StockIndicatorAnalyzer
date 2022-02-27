@@ -199,12 +199,12 @@ def dayK_desc_or_asc(dayK, dayNumber):
     dayK = Sdf.retype(dayK) 
     length = dayK.shape[0]
     change = dayK['pctchg']
-    if change[length - dayNumber] > 0:
+    if isinstance(change[length - dayNumber], float) and change[length - dayNumber] > 0:
         for i in range(1, dayNumber):
             if isinstance(change[length - dayNumber + i], float) and (change[length - dayNumber + i] < 0):
                 return 0
         return 2
-    if change[length - dayNumber] < 0:
+    if isinstance(change[length - dayNumber], float) and change[length - dayNumber] < 0:
         for i in range(1, dayNumber):
             if isinstance(change[length - dayNumber + i], float) and (change[length - dayNumber + i] > 0):
                 return 0
